@@ -1,0 +1,15 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-securepasswordmanagr-dev-fd9c7-authRole",
+      "UnauthRoleArn": "arn:aws:iam::651958506209:role/amplify-securepasswordmanagr-dev-fd9c7-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::651958506209:role/amplify-securepasswordmanagr-dev-fd9c7-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-securepasswordmanagr-dev-fd9c7-deployment",
+      "UnauthRoleName": "amplify-securepasswordmanagr-dev-fd9c7-unauthRole",
+      "StackName": "amplify-securepasswordmanagr-dev-fd9c7",
+      "StackId": "arn:aws:cloudformation:us-east-1:651958506209:stack/amplify-securepasswordmanagr-dev-fd9c7/9258f170-fe86-11ef-9ffb-0affc0d5459b",
+      "AmplifyAppId": "d1e2yfrvgx5y4"
+    }
+  }
+}
