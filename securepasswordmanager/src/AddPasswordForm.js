@@ -11,10 +11,11 @@ const AddPasswordForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
   
+    const email = localStorage.getItem("email");
     const userId = localStorage.getItem("userId");
-    const secretKey = localStorage.getItem("secretKey"); // Retrieve stored secret key
-  
-    if (!userId || !secretKey) {
+    const secretKey = localStorage.getItem("secret_key"); // Retrieve stored secret key
+    const password_hash = localStorage.getItem("password_hash");
+    if (!email || !secretKey) {
       alert("User not authenticated. Please log in again.");
       return;
     }
@@ -23,9 +24,12 @@ const AddPasswordForm = () => {
   
     try {
       await axios.post(`${API_URL}/add-password`, {
-        userId,
+        userId : userId,
         service_name: serviceName,
         encrypted_password: encryptedPassword,
+        secret_key: secretKey,
+        email: email,
+        password_hash: password_hash,
       });
   
       alert("Password added successfully!");
