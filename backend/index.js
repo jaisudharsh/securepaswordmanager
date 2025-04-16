@@ -27,31 +27,63 @@ db.connect(err => {
 // User Registration
 app.post('/signup', async (req, res) => {
     const { name, email, password, secret_key } = req.body;
-    const hashedPassword = await bcrypt.hash(password, 10);
+    console.log('Signup Data:', { name, email, secret_key });
 
-    db.query('INSERT INTO users (name, email, password_hash, secret_key) VALUES (?, ?, ?, ?)',
-        [name, email, hashedPassword, secret_key], (err) => {
-            if (err) return res.status(500).json({ error: 'Error registering user' });
-            res.json({ message: 'User registered successfully' });
-        });
+    try {
+        const hashedPassword = await bcrypt.hash(password, 10);
+        console.log('Hashed Password:', hashedPassword);
+
+        db.query('INSERT INTO users (name, email, password_hash, secret_key) VALUES (?, ?, ?, ?)',
+            [name, email, hashedPassword, secret_key], (err) => {
+                if (err) {
+                    console.error('MySQL Insert Error:', err); // Show full DB error
+                    return res.status(500).json({ error: 'Error registering user' });
+                }
+                res.json({ message: 'User registered successfully' });
+            });
+    } catch (err) {
+        console.error('Signup Exception:', err);
+        res.status(500).json({ error: 'Signup failed' });
+    }
 });
+
 
 // User Login
 app.post('/login', (req, res) => {
+
     const { email, password } = req.body;
+    console.log('Login Attempt:', email);
 
     db.query('SELECT * FROM users WHERE email = ?', [email], async (err, results) => {
-        if (err || results.length === 0) return res.status(400).json({ error: 'Invalid email or password' });
-
+        if (err) {
+            console.error('Login DB Error:', err);
+            return res.status(500).json({ error: 'Database error' });
+        }
+    
+        if (results.length === 0) {
+            console.log('No user found for email:', email);
+            return res.status(400).json({ error: 'Invalid email or password' });
+        }
+    
         const user = results[0];
+        console.log('User found:', user);
+        console.log('Plain password:', password);
+        console.log('Hashed password from DB:', user.password_hash);
+    
         const passwordMatch = await bcrypt.compare(password, user.password_hash);
-
-        if (!passwordMatch) return res.status(400).json({ error: 'Invalid email or password' });
-
+        console.log('Password match result:', passwordMatch);
+    
+        if (!passwordMatch) {
+            console.log('Password mismatch');
+            return res.status(400).json({ error: 'Invalid email or password' });
+        }
+    
         const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-        res.json({ token, userId: user.id, name: user.name });
+        res.json({ token, userId: user.id, email: user.email, secret_key: user.secret_key, password_hash: user.password_hash});
     });
+    
 });
+
 
 // Fetch Encrypted Passwords
 app.get('/passwords/:userId', (req, res) => {
@@ -65,13 +97,18 @@ app.get('/passwords/:userId', (req, res) => {
 
 // Add New Password
 app.post('/add-password', (req, res) => {
-    const { userId, service_name, encrypted_password } = req.body;
-
-    db.query('INSERT INTO password_manager (user_id, service_name, encrypted_password) VALUES (?, ?, ?)',
-        [userId, service_name, encrypted_password], (err) => {
-            if (err) return res.status(500).json({ error: 'Error adding password' });
+    console.log(req.body);
+    const { userId, service_name, encrypted_password, secret_key, email, password_hash } = req.body;
+    db.query('INSERT INTO password_manager (user_id, service_name, encrypted_password, secret_key, email, password_hash) VALUES (?, ?, ?, ?, ?, ?)', 
+        [userId, service_name, encrypted_password, secret_key, email, password_hash], 
+        (err) => {
+            if (err) {
+                console.error('Database Error:', err); // Log the error stack trace here
+                return res.status(500).json({ error: 'Error adding password' });
+            }
             res.json({ message: 'Password added successfully' });
-        });
+        }
+    );
 });
 
 // Get User Secret Key for Decryption
