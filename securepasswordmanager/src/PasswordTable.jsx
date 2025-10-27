@@ -6,12 +6,11 @@ const API_URL = "http://localhost:3001";
 
 const PasswordTable = () => {
   const [passwords, setPasswords] = useState([]);
-  const [secretKey, setSecretKey] = useState("");
 
   useEffect(() => {
     const fetchPasswords = async () => {
       try {
-        const userId = localStorage.getItem("userId"); // Assume userId is stored after login
+        const userId = localStorage.getItem("userId");
         const response = await axios.get(`${API_URL}/passwords/${userId}`);
         setPasswords(response.data);
       } catch (error) {
@@ -22,6 +21,7 @@ const PasswordTable = () => {
   }, []);
 
   const decryptPassword = (encryptedPassword) => {
+    const secretKey = prompt("Enter your secret key to decrypt the password:");
     if (!secretKey) {
       alert("Please enter your secret key first.");
       return;
@@ -38,14 +38,6 @@ const PasswordTable = () => {
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
       <h1 className="text-2xl font-bold mb-4">Stored Passwords</h1>
-
-      <input
-        type="password"
-        placeholder="Enter Secret Key"
-        className="p-2 border rounded mb-4"
-        value={secretKey}
-        onChange={(e) => setSecretKey(e.target.value)}
-      />
 
       <table className="w-full border-collapse border border-gray-400">
         <thead>
