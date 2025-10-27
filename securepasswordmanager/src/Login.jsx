@@ -15,6 +15,8 @@ function Login() {
             localStorage.setItem("token", response.data.token);
             localStorage.setItem("userId", response.data.userId);
             localStorage.setItem("email", response.data.email);
+            localStorage.setItem("secret_key", response.data.secret_key);
+            localStorage.setItem("password_hash", response.data.password_hash);
             navigate("/MainPage");
         } catch (error) {
             alert("Invalid login credentials");
