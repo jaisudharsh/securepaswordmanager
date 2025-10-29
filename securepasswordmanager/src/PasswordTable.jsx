@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import CryptoJS from "crypto-js";
 
-const API_URL = "http://localhost:3001";
+const API_URL = import.meta.env.VITE_API_URL;
 
 const PasswordTable = () => {
   const [passwords, setPasswords] = useState([]);

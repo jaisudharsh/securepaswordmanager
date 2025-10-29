@@ -3,6 +3,8 @@ import './SignUp.css';
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
 function SignUp() {
     const navigate = useNavigate();
     const [user, setUser] = useState({ name: "", email: "", password: "", secret_key: "" });
@@ -11,7 +13,7 @@ function SignUp() {
 
     const handleSignUp = async () => {
         try {
-            const response = await axios.post("http://localhost:3001/signup", user);
+            const response = await axios.post(`${API_URL}/signup`, user);
             alert(response.data.message); // Show success message
             navigate("/Login"); // Redirect to login page
         } catch (error) {
