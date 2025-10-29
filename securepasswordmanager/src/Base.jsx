@@ -4,6 +4,8 @@ import "./Base.css";
 
 const Base = () => {
   const navigate = useNavigate();
+  localStorage.clear();
+
 
   return (
     <div className="base-containers">
