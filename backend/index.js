@@ -30,6 +30,12 @@ app.get('/', (req, res) => {
 app.post('/signup', async (req, res) => {
   const { name, email, password, secret_key } = req.body;
   try {
+
+    const userCheck = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+    if (userCheck.rows.length > 0) {
+      return res.status(400).json({ error: 'User already exists' });
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
 
     await pool.query(
